@@ -130,7 +130,6 @@ class Personaje:
             if self.hp < 1:
                 self.lastimado()
                 self.death()
-                #self.kill()
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -140,7 +139,7 @@ class Ligero(Personaje):
 
     def __init__(self, x, y, name, pociones):
         # Se heredan los valores iniciales del padre
-        super().__init__(x, y, name, vida_max = 100, fuerza=60, defensa=5, pociones=pociones)
+        super().__init__(x, y, name, vida_max = 100, fuerza=25, defensa=5, pociones=pociones)
         self.name = name
         self.vida_max = self.vida_max
         self.hp = self.vida_max
@@ -255,7 +254,6 @@ class Ligero(Personaje):
             if self.hp < 1:
                 self.lastimado()
                 self.death()
-                #self.kill()
 
 
     def draw(self, screen):
@@ -388,7 +386,6 @@ class Pesado(Personaje):
             if self.hp < 1:
                 self.lastimado()
                 self.death()
-                #self.kill()
 
 
     def draw(self, screen):

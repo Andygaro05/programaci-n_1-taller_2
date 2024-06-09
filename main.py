@@ -18,7 +18,7 @@ pygame.display.set_caption("World of Fantasy")  # Nombre del juego
 
 # Variables de juego
 current_fighter = 1
-total_fighters = 3
+total_fighters = 4
 action_cooldown = 0
 action_wait_time = 90
 attack = False
@@ -85,22 +85,26 @@ def dibujar_panel():
     dibujar_texto(f"{Caballero.name} HP: {Caballero.hp}", font, negro, 100, SCREEN_HEIGHT - PANEL_BAJO + 10)
 
     # Mostrar stats bandidos
-    for count, i in enumerate(bandidos):
-        # Mostrar nombre y vida
-        dibujar_texto(f"{i.name} HP: {i.hp}", font, negro, 800, (SCREEN_HEIGHT - PANEL_BAJO + 10) + count * 60)
+    # Mostrar nombre y vida
+    dibujar_texto(f"{ligero1.name} HP: {ligero1.hp}", font, negro, 550, 680)
+    dibujar_texto(f"{ligero2.name} HP: {ligero2.hp}", font, negro, 550, 740)
+    dibujar_texto(f"{pesado1.name} HP: {pesado1.hp}", font, negro, 800, 740)
 
 # Creamos las instancias de los personajes
-Caballero = Personaje(400, 560, "Caballero", 150, 50, 10, 3)
+Caballero = Personaje(400, 560, "Caballero", 150, 50, 10, 5)
 ligero1 = Ligero(800, 530, "Bandido Ligero", 1)
-pesado1 = Pesado(1000, 530, "Enemigo Pesado", 3)
+ligero2 = Ligero(600, 530, "Bandido Ligero", 1)
+pesado1 = Pesado(1000, 530, "Jefe bandido", 3)
 
 bandidos = []
 bandidos.append(ligero1)
+bandidos.append(ligero2)
 bandidos.append(pesado1)
 
 # Creamos las barras de vida
 barra_vida_caballero = HealthBar(100, SCREEN_HEIGHT - PANEL_BAJO + 40, Caballero.hp, Caballero.vida_max)
-barra_vida_ligero1 = HealthBar(800, SCREEN_HEIGHT - PANEL_BAJO + 40, ligero1.hp, ligero1.vida_max)
+barra_vida_ligero1 = HealthBar(600, SCREEN_HEIGHT - PANEL_BAJO + 40, ligero1.hp, ligero1.vida_max)
+barra_vida_ligero2 = HealthBar(600, SCREEN_HEIGHT - PANEL_BAJO + 100, ligero2.hp, ligero2.vida_max)
 barra_vida_pesado1 = HealthBar(800, SCREEN_HEIGHT - PANEL_BAJO + 100, pesado1.hp, pesado1.vida_max)
 
 # Creamos los botones
@@ -175,7 +179,9 @@ while run:
         dibujar_panel()
         barra_vida_caballero.draw(screen, Caballero.hp)
         barra_vida_ligero1.draw(screen, ligero1.hp)
+        barra_vida_ligero2.draw(screen, ligero2.hp)
         barra_vida_pesado1.draw(screen, pesado1.hp)
+
 
         # Dibujamos el estado actual del caballero
         Caballero.update()
@@ -273,12 +279,12 @@ while run:
                                 current_fighter += 1  # Cambia de turno
                                 action_cooldown = 0  # Reinicia el cd de cada acción
                     else:
-                         if not bandido.experience_given:  # Verifica si la experiencia ya ha sido otorgada
+                        if not bandido.experience_given:  # Verifica si la experiencia ya ha sido otorgada
                             bandido.death()
                             Caballero.xp += 10
                             print(Caballero.xp)
                             bandido.experience_given = True  # Marca la experiencia como otorgada
-                    current_fighter += 1
+                        current_fighter += 1
 
             # Si todos los enemigos ya usaron su movida
             if current_fighter > total_fighters:

@@ -1,6 +1,5 @@
 import pygame
-from Peleador import *  # Importamos todo
-from Peleador import damage_text_group  # Toca hacer el llamado individual
+from Peleador import *
 from boton import Button
 
 pygame.init()
@@ -27,7 +26,9 @@ clicked = False
 pocion = False
 efecto_pocion = 20  # La poción sana de a 20 de salud
 game_over = 0
-game_paused = False
+game_paused = True
+menu_state = "main"
+victory_timer = 0
 
 # Fuente de juego
 font = pygame.font.SysFont("Times New Roman", 24)
@@ -40,23 +41,33 @@ verde = (0, 255, 0)
 # Cargamos las imágenes
 fondo_img = pygame.image.load("img/fondo/fondo resize.png").convert_alpha()
 panel_img = pygame.image.load("img/iconos/boton madera.png").convert_alpha()
-pocion_img = pygame.image.load("img/iconos/pocion salud.png").convert_alpha()
+pocion_img = pygame.image.load("img/iconos/pocion_salud.png").convert_alpha()
 victoria = pygame.image.load("img/iconos/victoria.png").convert_alpha()
 derrota = pygame.image.load("img/iconos/derrota.png").convert_alpha()
-
-# Imagen de la espada para el mouse
-mouse_img = pygame.image.load("img/iconos/espada mouse.png").convert_alpha()
-
 # Iconos para el menú
 play_img = pygame.image.load("img/iconos/play.png").convert_alpha()
 tienda_img = pygame.image.load("img/iconos/tienda.png").convert_alpha()
 quit_img = pygame.image.load("img/iconos/salida.png").convert_alpha()
 fondo_menu_img = pygame.image.load("img/fondo/fondo_menu.jpg").convert_alpha()
 
+#fondo para la tienda
+back_img = pygame.image.load("img/iconos/back.png").convert_alpha()
+fondo_tienda_img = pygame.image.load("img/fondo/fondo_tienda.png").convert_alpha()
+#Objetos de la tienda
+pocion_fuerza_img = pygame.image.load("img/tienda/pocion_fuerza.png")
+pocion_vida_img = pygame.image.load("img/tienda/pocion_vida.png")
+
+#botones de la tienda
+pocion_fuerza_button = Button(100, 100, pocion_fuerza_img, 256, 256)	
+pocion_vida_button = Button(300, 100, pocion_vida_img, 256, 256)	
+# Imagen de la espada para el mouse
+mouse_img = pygame.image.load("img/iconos/espada mouse.png").convert_alpha()
+
 # Botones para el menú
 play_button = Button(485, 200, play_img, 240, 111)
-tienda_button = Button(500, 300, tienda_img, 215, 102)
-quit_button = Button(500, 400, quit_img, 215, 115)
+tienda_button = Button(500, 325, tienda_img, 215, 102)
+quit_button = Button(500, 550, quit_img, 215, 115)
+back_button = Button(500, 400, back_img, 193, 105)
 
 # Función para dibujar texto
 def dibujar_texto(texto, font, text_col, x, y):
@@ -95,6 +106,14 @@ barra_vida_pesado1 = HealthBar(800, SCREEN_HEIGHT - PANEL_BAJO + 100, pesado1.hp
 # Creamos los botones
 boton_pocion = Button(100, SCREEN_HEIGHT - PANEL_BAJO + 70, pocion_img, 64, 64)
 
+# Función para reiniciar enemigos
+def reiniciar_personajes():
+    for bandido in bandidos:
+        bandido.hp = bandido.vida_max
+        bandido.vivo = True
+        bandido.pociones = 3
+    Caballero.hp = Caballero.vida_max
+
 # Validamos que el juego se esté ejecutando
 run = True
 while run:
@@ -115,16 +134,41 @@ while run:
             run = False
 
     if game_paused:
-        dibujar_fondo(fondo_menu_img)
-        
-        if play_button.draw(screen):
-            game_paused = False
 
-        if tienda_button.draw(screen):
-            pass
+        if menu_state == "main":
+            dibujar_fondo(fondo_menu_img)
 
-        if quit_button.draw(screen):
-            run = False
+            if play_button.draw(screen):
+                game_paused = False
+
+            if tienda_button.draw(screen):
+                menu_state = "tienda"
+
+            if quit_button.draw(screen):
+                run = False
+        if menu_state == "tienda":
+            screen.fill((128, 128, 128))
+            dibujar_fondo(fondo_tienda_img)
+            dibujar_texto(f"Experiencia: {Caballero.xp}", pygame.font.SysFont("Cascadia Mono SemiBold", 64), negro, 50, 50)
+            dibujar_texto("Costo: 30 xp", pygame.font.SysFont("Cascadia Mono SemiBold", 32), verde, 165, 300)
+            dibujar_texto("5pts más de vida", pygame.font.SysFont("Cascadia Mono SemiBold", 32), verde, 150, 140)
+            dibujar_texto("Costo: 20 xp", pygame.font.SysFont("Cascadia Mono SemiBold", 32), verde, 365, 300)
+            dibujar_texto("Poción de vida", pygame.font.SysFont("Cascadia Mono SemiBold", 32), verde, 365, 140)
+            pocion_vida_button.draw(screen)
+            pocion_fuerza_button.draw(screen)
+
+            if pocion_fuerza_button.clicked:
+                if Caballero.xp >= 30:
+                    Caballero.xp -= 30
+                    Caballero.vida_max += 5 
+
+            if pocion_vida_button.clicked:
+                if Caballero.xp >= 20:
+                    Caballero.xp -= 20
+                    Caballero.pociones += 1
+
+            if back_button.draw(screen):
+                menu_state = "main"
     else:
         # Dibujar el fondo, panel y caballero
         dibujar_fondo(fondo_img)
@@ -201,17 +245,17 @@ while run:
                                 damage_text_group.add(damage_text)
                                 current_fighter += 1
                                 action_cooldown = 0
+
             else:
                 game_over = -1
 
-            # Acción del enemigo
-            # Creamos el enumerate para recorrer bandidos y almacenar sus índices
+            # Acciones de los enemigos
             for count, bandido in enumerate(bandidos):
-                if current_fighter == count + 2:  # Se inicia en 2 porque se arranca en 0 y 1 es el caballero
+                if current_fighter == 2 + count:
                     if bandido.vivo:
                         action_cooldown += 1
                         if action_cooldown >= action_wait_time:
-                            # Validamos si necesita curarse primero
+                            # Comprobamos si el bandido puede usar poción
                             if (bandido.hp / bandido.vida_max) < 0.5 and bandido.pociones > 0:
                                 # Validar que no haya overhealth
                                 if bandido.vida_max - bandido.hp > efecto_pocion:
@@ -230,17 +274,34 @@ while run:
                                 action_cooldown = 0  # Reinicia el cd de cada acción
                     else:
                         bandido.death()
+                        Caballero.xp += 10
+                        print(Caballero.xp)
                         current_fighter += 1
 
             # Si todos los enemigos ya usaron su movida
             if current_fighter > total_fighters:
                 current_fighter = 1
+
         # Validamos si game over
         elif game_over != 0:
             if game_over == 1:
                 screen.blit(victoria, (300, 100))
+                victory_timer += 1
+                if victory_timer > FPS * 5:  # 5 segundos
+                    game_paused = True
+                    menu_state = "main"
+                    game_over = 0
+                    victory_timer = 0
+                    reiniciar_personajes()  # Reiniciar enemigos después de victoria
             else:
                 screen.blit(derrota, (360, 250))
+                victory_timer += 1
+                if victory_timer > FPS * 5:  # 5 segundos
+                    game_paused = True
+                    menu_state = "main"
+                    game_over = 0
+                    victory_timer = 0
+                    reiniciar_personajes()  # Reiniciar enemigos después de derrota
 
         # Validar si todos los bandidos están muertos
         bandidos_vivos = 0

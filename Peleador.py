@@ -16,7 +16,9 @@ class Personaje:
         self.fuerza = fuerza
         self.defensa = defensa
         self.pociones = pociones
-        self.inventario =[]
+        self.xp = 0
+        self.monedas = 0
+        self.inventario = []
         self.vivo = True
         #obtenemos el tiempo
         self.update_time = pygame.time.get_ticks()
@@ -138,7 +140,7 @@ class Ligero(Personaje):
 
     def __init__(self, x, y, name, pociones):
         # Se heredan los valores iniciales del padre
-        super().__init__(x, y, name, vida_max=100, fuerza=60, defensa=5, pociones=pociones)
+        super().__init__(x, y, name, vida_max = 100, fuerza=60, defensa=5, pociones=pociones)
         self.name = name
         self.vida_max = self.vida_max
         self.hp = self.vida_max
@@ -264,7 +266,7 @@ class Pesado(Personaje):
 
     def __init__(self, x, y, name, pociones):
         # Se heredan los valores iniciales del padre
-        super().__init__(x, y, name, vida_max=300, fuerza=20, defensa=20, pociones=pociones)
+        super().__init__(x, y, name, vida_max=200, fuerza=20, defensa=20, pociones=pociones)
         self.name = name
         self.vida_max = self.vida_max
         self.hp = self.vida_max

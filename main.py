@@ -273,11 +273,9 @@ while run:
                                 current_fighter += 1  # Cambia de turno
                                 action_cooldown = 0  # Reinicia el cd de cada acción
                     else:
-                        if not bandido.experience_given:  # Verifica si la experiencia ya ha sido otorgada
                             bandido.death()
                             Caballero.xp += 10
                             print(Caballero.xp)
-                            bandido.experience_given = True  # Marca la experiencia como otorgada
                             current_fighter += 1
 
             # Si todos los enemigos ya usaron su movida

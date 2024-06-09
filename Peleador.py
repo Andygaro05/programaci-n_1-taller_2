@@ -146,7 +146,6 @@ class Ligero(Personaje):
         self.hp = self.vida_max
         self.pociones = pociones
         self.vivo = True
-        self.experience_given = False
 
         #obtenemos el tiempo
         self.update_time = pygame.time.get_ticks()
@@ -273,7 +272,6 @@ class Pesado(Personaje):
         self.hp = self.vida_max
         self.pociones = pociones
         self.vivo = True
-        self.experience_given = False
 
         #obtenemos el tiempo
         self.update_time = pygame.time.get_ticks()

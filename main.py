@@ -275,7 +275,6 @@ while run:
                     else:
                         bandido.death()
                         Caballero.xp += 10
-                        print(Caballero.xp)
                         current_fighter += 1
 
             # Si todos los enemigos ya usaron su movida
